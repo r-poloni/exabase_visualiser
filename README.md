@@ -1,5 +1,5 @@
 # exabase_visualiser  
-exabase_visualiser is an R code based on shinyapp package to visualise biodiversity data.  
+exabase_visualise.R is an R script based on shinyapp package to visualise biodiversity data.  
 
 It was designed to suit my own needs, which are mainly visualizing the data from my collection and from citizen science, and see what is the distribution and the material I have for study and for sequencing through maps and summary statistics. It is particularly useful for people that need to manage a collection of samples for molecular or morphological studies. It is also useful if you want to visualize and explore the data of a certain species or more species from citizen science and those from your own collection, for a paper or project.
 
