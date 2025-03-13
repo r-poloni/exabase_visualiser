@@ -1,12 +1,12 @@
 # exabase_visualiser  
-exabase_visualise.R is an R script based on shinyapp package to visualise biodiversity data.  
+exabase_visualise.R is an R script based on shiny package to visualise biodiversity data.  
 
 It was designed to suit my own needs, which are mainly visualizing the data from my collection and from citizen science, and see what is the distribution and the material I have for study and for sequencing through maps and summary statistics. It is particularly useful for people that need to manage a collection of samples for molecular or morphological studies. It is also useful if you want to visualize and explore the data of a certain species or more species from citizen science and those from your own collection, for a paper or project.
 
 ## Installation instructions  
 Once cloned the repository, the code requires a few R packages to be installed on your machine. If you use Rstudio, just type:  
 ```
-install.packages(c(DBI,RSQLite,dplyr,shiny,leaflet,ggplot2,DT))
+install.packages(c("dplyr","shiny","leaflet","ggplot2","DT"))
 ```
 
 For how to install R and Rstudio, please see: https://posit.co/download/rstudio-desktop/  
@@ -15,7 +15,7 @@ For how to install R and Rstudio, please see: https://posit.co/download/rstudio-
   
 I encourage you to first take a look to the example file (example_data.csv) and try to run the app with this data, to see what the table looks like and how it works. The data table has been produced re-arranging the data from the supplementary_data_s1.xlsx and supplementary_data_s2.xlsx from [Poloni et al. (2023)](https://academic.oup.com/zoolinnean/article/200/3/705/7246614), and contains occurrence data for the genus Stenostoma, together with the data used for molecular analyses.
 
-To avoid problems to the code, I suggest to re-arrange your data based on the example, but of course it is possible to run the app also with a differently formatted table, with some adjustments. To run with the code provided, the table should at least contain the following fields:
+To avoid problems to the code, I suggest to re-arrange your own data based on the example, but of course it is possible to run the app also with a differently formatted table, with some adjustments. To run with the code provided, the table should at least contain the following fields:
 - "genus": taxonomy
 - "species": taxonomy
 - "nation": nation where the sample has been recorded
@@ -37,8 +37,40 @@ The GUI (Graphic User Interface) that is produced by the app allows to filter th
 - Second tab: summarise the phenology of the species/population selected, and summarize the specimens in the database by country and source (e.g. collection or citizen science repository)  
 - Third tab: visualize the filtered table  
   
-**Importing from SQLite database:** If you want to import from an existing SQLite database, I provide an example code in the first part of the script using RSQLite package. 
+**Importing from SQLite database:** If you want to import from an existing SQLite database, you can easily do that with a few lines of code. I provide a simple example here, importing the table from the table "records" of a database called "database.db":
 
+```
+#load two supplementary packages (you will need to install them if they are not already)
+library("DBI")
+library("RSQLite")
+
+#sets the path of the database file
+db_path <- "database.db"
+#creates the connection
+con <- dbConnect(SQLite(), db_path)
+
+# Query the database
+query <- "SELECT
+* FROM records;"
+
+#imports the data into a data frame
+data <- dbGetQuery(con, query)
+# Disconnect from database
+dbDisconnect(con)
+```
+
+**Importing from Google Sheets** If you want to import from a Google Sheet, I provide an example code here
+
+```
+#load googlesheets4 library, of course you will have to install it if is not already
+library(googlesheets4)
+# Authenticate manually - just run the first time
+# If it asks you if you agree to cache OAuth access credentials in the folder ~/Library/Caches/gargle, select "yes"
+# it will also open a browser were you will be able to seelct your account
+gs4_auth()
+#reads the google sheet
+data <- read_sheet("sheet_link")
+```
 
 ## If you encounter some troubles
 
