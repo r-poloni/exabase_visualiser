@@ -1,39 +1,15 @@
 # Load necessary libraries
-library(DBI)
-library(RSQLite)
 library(dplyr)
 library(shiny)
 library(leaflet)
 library(ggplot2)
 library(DT)
 
-#### Step 1: Query SQLite Database and Data Manipulation ####
-# Connect to SQLite database
-db_path <- "database.db"
-con <- dbConnect(SQLite(), db_path)
-
-# Query the database
-query <- "SELECT 
-    t1.*,
-    t2.collection_id,
-    t2.stage,
-    t2.preservation,
-    t2.localisation,
-    t3.tax_order,
-    t3.author_year
-FROM 
-    records t1
-LEFT JOIN taxonomy t3 ON t3.usage_key = t1.usage_key
-LEFT JOIN collection t2 ON t2.linking_id = t1.id;"
-data <- dbGetQuery(con, query)
-# Disconnect from database
-dbDisconnect(con)
-
-#### OR Import from csv ####
+#### Step 1: Import csv ####
 
 data <- read.csv("example_data.csv", header=TRUE)
 
-#### Step2: filter the data and prepare for visualisation ####
+#### Step 2: Filter the data and prepare for visualisation ####
 
 #coerce to numeric a series of columns (sqlite import makes them character...)
 cols_num <- c("num_f","num_m","num_nosex","given_long","given_lat")
@@ -56,7 +32,7 @@ for (i in 1:nrow(data)) {
 data$molecular <- ifelse(data$preservation=="alcol 96", 1, 0)
 
 
-#### Run ahiny app to visualise ####
+#### Step 3: Run ahiny app to visualise ####
 
 # Step 2: Shiny App
 ui <- fluidPage(
