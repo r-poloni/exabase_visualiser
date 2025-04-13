@@ -1,10 +1,15 @@
 # exabase_visualiser  
-exabase_visualise.R is an R script based on shiny package to visualise biodiversity data.  
+exabase_visualiser is a solution based on R and shiny package to visualise biodiversity data.  
 
-It was designed to suit my own needs, which are mainly visualizing the data from my collection and from citizen science, and see what is the distribution and the material I have for study and for sequencing through maps and summary statistics. It is particularly useful for people that need to manage a collection of samples for molecular or morphological studies. It is also useful if you want to visualize and explore the data of a certain species or more species from citizen science and those from your own collection, for a paper or project.
+It was designed to suit my own needs, which are mainly visualizing the data from natural history collections and from citizen science, and see what is the distribution and the material I have for study and for sequencing through maps and summary statistics. It is particularly useful for people that need to manage a collection of samples for molecular or morphological studies. It is also useful if you want to visualize and explore the data of a certain species or more species from citizen science and those from your own collection, for a paper or project.
+
+## Try it out
+A demo version of this app running on the example data provided with the code can be accessed here: https://r-poloni.github.io/exabase_visualiser/ 
+The deployment on the github page has been done with the shiny-live package (https://github.com/RamiKrispin/shinylive-r).
+Try it out!
 
 ## Installation instructions  
-Once cloned the repository, the code requires a few R packages to be installed on your machine. If you use Rstudio, just type:  
+Once cloned the repository, the code which is in the /app directory and is names app.R requires a few R packages to be installed on your machine. If you use Rstudio, just type:  
 ```
 install.packages(c("dplyr","shiny","leaflet","ggplot2","DT"))
 ```
@@ -13,7 +18,7 @@ For how to install R and Rstudio, please see: https://posit.co/download/rstudio-
 
 ## Input data format  
   
-I encourage you to first take a look to the example file (example_data.csv) and try to run the app with this data, to see what the table looks like and how it works. The data table has been produced re-arranging the data from the supplementary_data_s1.xlsx and supplementary_data_s2.xlsx from [Poloni et al. (2023)](https://academic.oup.com/zoolinnean/article/200/3/705/7246614), and contains occurrence data for the genus Stenostoma, together with the data used for molecular analyses.
+I encourage you to first take a look to the example file (/app/example_data.csv) and try to run the app with this data, to see what the table looks like and how it works. The data table has been produced re-arranging the data from the supplementary_data_s1.xlsx and supplementary_data_s2.xlsx from [Poloni et al. (2023)](https://academic.oup.com/zoolinnean/article/200/3/705/7246614), and contains occurrence data for the genus Stenostoma, together with the data used for molecular analyses.
 
 To avoid problems to the code, I suggest to re-arrange your own data based on the example, but of course it is possible to run the app also with a differently formatted table, with some adjustments. To run with the code provided, the table should at least contain the following fields:
 - "genus": taxonomy
