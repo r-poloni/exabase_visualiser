@@ -59,13 +59,13 @@ LEFT JOIN taxonomy t3 ON t3.usageKey = t1.usageKey;"
     t1.decimalLongitude,
     t1.eventDate,
     t1.recordedBy,
-    t1.image,
     t1.institutionID,
     t2.collection_id,
     t2.sex,
     t2.preservation,
     t2.bodypart,
     t2.localisation,
+    t2.image,
     t3.'order',
     t3.family,
     t3.genus,
@@ -149,6 +149,16 @@ for (i in 1:nrow(data)) {
   {
     data$image[i] <- paste0(
       '<a href="images/', basename(data$image[i]), '" target="_blank">Open File</a>'
+    )
+  }
+}
+
+# creates a link field
+for (i in 1:nrow(data_molecular)) {
+  if (!is.na(data_molecular$image[i]) & nchar(data_molecular$image[i]>2))
+  {
+    data_molecular$image[i] <- paste0(
+      '<a href="images/', basename(data_molecular$image[i]), '" target="_blank">Open File</a>'
     )
   }
 }
