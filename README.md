@@ -1,81 +1,43 @@
 # exabase_visualiser  
-exabase_visualiser is a solution based on R and shiny package to visualise biodiversity data.  
+exabase_visualiser is a solution based on R and shiny package to visualise biodiversity data stored in a database structure called exabase: https://github.com/r-poloni/exabase. This database structure is built upon Darwin Core standard and accomodates both individual based records and occurrence based records. 
 
-It was designed to suit my own needs, which are mainly visualizing the data from natural history collections and from citizen science, and see what is the distribution and the material I have for study and for sequencing through maps and summary statistics. It is particularly useful for people that need to manage a collection of samples for molecular or morphological studies. It is also useful if you want to visualize and explore the data of a certain species or more species from citizen science and those from your own collection, for a paper or project.
+This app was designed to suit my own needs, which are mainly visualizing the data from natural history collections, from citizen science, and see what the material I have for study and for sequencing through maps and summary statistics. It is particularly useful for people that need to manage a collection of samples for molecular or morphological studies. It is also useful if you want to visualize and explore the data of a certain species or more species from citizen science and those from your own collection, for a paper or project.
 
 ## Try it out
-A demo version of this app running on the example data provided with the code can be accessed here: https://r-poloni.github.io/exabase_visualiser/ 
+A demo version of this app running on the example data (modified for illustrating the app functioning from the data in [Poloni et al. 2023](https://academic.oup.com/zoolinnean/article/200/3/705/7246614?login=false)) is provided with the code and can be accessed here: https://r-poloni.github.io/exabase_visualiser/
 The deployment on the github page has been done with the shiny-live package (https://github.com/RamiKrispin/shinylive-r).
 Try it out!
 
 ## Installation instructions  
-Once cloned the repository, the code which is in the /app directory and is names app.R requires a few R packages to be installed on your machine. If you use Rstudio, just type:  
+Once cloned the repository, you will find the file exabase_visualiser.R that runs the app in the app/ directory. It requires a few R packages to be installed on your machine. If you use Rstudio, just type:  
 ```
-install.packages(c("dplyr","shiny","leaflet","ggplot2","DT"))
+install.packages(c("DBI","RSQLite","dplyr","shiny","leaflet","ggplot2","DT"))
 ```
+To test if the app is working with the test data click on "Run App" in the top right corner of the editor tab. This should open a window with the app in your R session.
 
 For how to install R and Rstudio, please see: https://posit.co/download/rstudio-desktop/  
 
-## Input data format  
-  
-I encourage you to first take a look to the example file (/app/example_data.csv) and try to run the app with this data, to see what the table looks like and how it works. The data table has been produced re-arranging the data from the supplementary_data_s1.xlsx and supplementary_data_s2.xlsx from [Poloni et al. (2023)](https://academic.oup.com/zoolinnean/article/200/3/705/7246614), and contains occurrence data for the genus Stenostoma, together with the data used for molecular analyses.
-
-To avoid problems to the code, I suggest to re-arrange your own data based on the example, but of course it is possible to run the app also with a differently formatted table, with some adjustments. To run with the code provided, the table should at least contain the following fields:
-- "genus": taxonomy
-- "species": taxonomy
-- "nation": nation where the sample has been recorded
-- "location": location where the sample has been recorded, usually a toponym (e.g. Lake Garda or Mount Etna) 
-- "given_lat": latitude in decimal degrees
-- "given_long": longitude in decimal degrees
-- "date": to avoid problems in formatting, recurrent with dates, the format is GG_MM_YYYY or, if the day is missing, MM_YYYY
-- "source": the source of the occurrence (e.g. GBIF or Museum National d'Histoire Naturelle, Paris)
-- "num_m": number of males associated to this observation (only for occurences)
-- "num_f": number of females associated to this observation (only for occurences)
-- "num_nosex": number of specimens with unknown sex associated to this observation (only for occurences)
-- "preservation": how the samples are preserves (only for specimens in collections). For specimens preserved for molecular analyses, the value should be set as "alcol 96"
+## Using the app with your data
+If you already have a database aligning with the [exabase specs](https://github.com/r-poloni/exabase/blob/main/README.md) you just have to modify a few things:
+1) "csv_user.csv" file. It is the file where you store the information specific to your app, namely a) text: the path to the database file ("example_exabase.db" in the example), b) text: the name of the collection of the user for the "Collection" tab visualisation ("coll. Poloni" in the example), c) text: if there is a table like the "Molecular" table containing samples registered in the database individually. Can be "yes" or "no".
+2) The app has been made to work offline. In this case, to render the map you will need to download the map tiles (google ones work nicely) in the subfolder www/tiles_google/ of the app/ directory. This can be quite complex and long if you need a high resolution, because you will need to download tens of thousands of tiles. If you use R, one solution is here: https://github.com/lmikolajczak/wms-tiles-downloader
+3) The app has the possibility of showing specimen images in the "Filtered table" visualisation under the "image" column. To be displayed, the images must be in the www/images/ subfolder of the app/ directory and their name should match the text in the column "image" of the database table "Records" or "Molecular".
 
 
 ## Usage  
 
-The GUI (Graphic User Interface) that is produced by the app allows to filter the data, and use it to produce different visualizations:  
-- First tab: a map of occurrences, where the size of the dot indicating the occurrence is proportional to the number of specimens in this location  
-- Second tab: summarise the phenology of the species/population selected, and summarize the specimens in the database by country and source (e.g. collection or citizen science repository)  
-- Third tab: visualize the filtered table  
-  
-**Importing from SQLite database:** If you want to import from an existing SQLite database, you can easily do that with a few lines of code. I provide a simple example here, importing the table from the table "records" of a database called "database.db":
+The GUI (Graphic User Interface) that is produced by the app allows to filter the data, and use it to produce different visualizations. The two common components found in all the tabs are
+1) **Column selector.** It allows the user to select the coumns he want to use for filtering. Some of them are pre-checked because they are needed by the tab you are using to produce the graphics.  
+2) **Filtering text boxes.** These can be used to filter the content of the database. You can either search for an exact match typing directly (e.g. Genus species in the "canonicalName" box to look for a specific species) or using expressions, only available for numeric columns. In the latter case, you need to type exp(your_expression_here). E.g. exp(>10) in the "num_all" column to filter the records with more than 10 individuals.  
+<br>
+The different tabs in the app are:
 
-```
-#load two supplementary packages (you will need to install them if they are not already)
-library("DBI")
-library("RSQLite")
+- **Map** This is a map of the records, where the size of the dot is proportional to the number of specimens in this location. Clicking on the dot you can visualise the locality name.  
+- **Stats by taxon** It is a set of summary graphs that summarise a) the phenology of the taxon selected, b) the altitudinal distribution of observations, c) a table giving the number of specimens of a given taxon available for study per country: "n_all" corresponds to all samples available, "n_dry" to the samples dry-preserved and "n_mol" to the samples available for molecular studies.  
+- **Filtered table** Here you can simply visualise the table filtered. The user can choose to visualise the "Records" table or the "Molecular" table.  
+- **Collection** This table is a list of taxa (species or subspecies in this case) available in the user collection (ad defined in the "user.csv" file).  
+<br>
 
-#sets the path of the database file
-db_path <- "database.db"
-#creates the connection
-con <- dbConnect(SQLite(), db_path)
-
-# Query the database
-query <- "SELECT
-* FROM records;"
-
-#imports the data into a data frame
-data <- dbGetQuery(con, query)
-# Disconnect from database
-dbDisconnect(con)
-```
-
-**Importing from Google Sheets** If you want to import from a Google Sheet, I provide an example code here
-
-```
-#load googlesheets4 library, of course you will have to install it if is not already
-library(googlesheets4)
-# Authenticate manually - just run the first time
-# If it asks you if you agree to cache OAuth access credentials in the folder ~/Library/Caches/gargle, select "yes"
-# it will also open a browser were you will be able to seelct your account
-gs4_auth()
-#reads the google sheet
-data <- read_sheet("sheet_link")
-```
 
 ## If you encounter some troubles
 
@@ -84,11 +46,20 @@ If you have problems running the code, or you would like something similar for y
 
 ## Example of the GUI  
 
-**First tab**
-![First_tab_map](https://github.com/user-attachments/assets/24ca691b-fb93-469e-85f2-f3c67d88f48e)
+**Map**
+<img width="1000" height="554" alt="tab1" src="https://github.com/user-attachments/assets/40763761-50cb-4470-86cb-751124c2293f" />
 
-**Second tab**
-![Second_tab_summary_stats](https://github.com/user-attachments/assets/063e72f6-895a-4e1f-84e3-f9068e75c186)
 
-**Third tab**
-![Third_tab_filtered_table](https://github.com/user-attachments/assets/4c07572a-aae7-4a56-b11f-db2402646919)
+**Stats by species**
+<img width="1000" height="599" alt="tab2" src="https://github.com/user-attachments/assets/3e59a26b-56e6-49a7-bdaf-992443003871" />
+
+
+**Filtered table**
+<img width="1000" height="541" alt="tab3" src="https://github.com/user-attachments/assets/cf501024-70a2-41d4-9fc0-294590ccb5d8" />
+
+
+**Collection**
+<img width="1000" height="547" alt="tab4" src="https://github.com/user-attachments/assets/d0940bab-fe6d-4198-8e91-a90fc80a2bc7" />
+
+
+
